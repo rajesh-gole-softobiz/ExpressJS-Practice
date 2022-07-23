@@ -5,8 +5,10 @@ const userRouter= require('./routes/users.route')
 
 app.use(userRouter);
 
-app.get('/',(req,res)=>{
-    res.send(`<h1>I\'m a get request</h1>`)
+//===================Sending HTML file as response=================
+app.use('/',(req,res)=>{
+    res.status(200);
+    res.sendFile(__dirname+"/views/index.html")
 })
 
 app.use((req,res)=>{

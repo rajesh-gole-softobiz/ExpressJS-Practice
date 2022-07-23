@@ -12,17 +12,19 @@ router.get('/user/login',(req,res)=>{
     res.send('I\'m login')
 })
 
-// Sending JSON data and status code as response
+// // Sending JSON data and status code as response
 
-router.use('/raj',(req,res)=>{
-    // res.status(200).json({
-    //     msg: "Hello Raj",
-    //     staCode: 200
-    // })
+// router.use('/raj',(req,res)=>{
+//     // res.status(200).json({
+//     //     msg: "Hello Raj",
+//     //     staCode: 200
+//     // })
 
-// response redirect    
-    res.redirect('/user/register')
-})
+// // response redirect    
+//     res.redirect('/user/register')
+// })
+
+
 
 
 module.exports = router;
