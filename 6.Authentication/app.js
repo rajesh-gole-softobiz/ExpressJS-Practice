@@ -89,7 +89,11 @@ app.get('/logout',(req,res)=>{
 })
 
 app.get('/profile',(req,res)=>{
-    res.render("profile")
+    if(req.isAuthenticated()){
+        res.render("profile")
+    }
+    res.redirect('/login');
+    
 })
 
 
