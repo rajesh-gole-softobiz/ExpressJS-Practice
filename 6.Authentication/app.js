@@ -1,9 +1,10 @@
-require('dotenv').config();
 const express = require('express');
 const app = express();
 const ejs = require('ejs');
 const cors = require('cors');
 
+require('dotenv').config();
+require('./config/passport');
 require('./config/database');
 const User = require('./models/user.model');
 
@@ -74,13 +75,14 @@ app.get('/login',(req,res)=>{
     res.render("login")
 })
 
-app.post('/login',(req,res)=>{
-    try {
-        res.status(200).send('User logged in');
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-})
+app.post('/login', 
+  passport.authenticate('local', {
+     failureRedirect: '/login' ,
+      successRedirect : '/profile' 
+    }),
+  function(req, res) {
+    res.redirect('/');
+  });
 
 app.get('/logout',(req,res)=>{
     res.redirect("/")
