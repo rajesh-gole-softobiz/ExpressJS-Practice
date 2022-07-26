@@ -4,6 +4,7 @@ const ejs = require('ejs');
 const cors = require('cors');
 
 require('./config/database');
+const User = require('./models/user.model');
 
 
 app.set("view engine", "ejs");
@@ -21,9 +22,15 @@ app.get('/register',(req,res)=>{
     res.render("register")
 })
 
-app.post('/register',(req,res)=>{
+app.post('/register',async (req,res)=>{
     try {
-        res.status(201).send('User is Created');
+        const user = await User.findOne({username: req.body.username})
+        if(user){
+            return res.status(400).send('User Already Exist');
+        }
+        const newUser = new User(req.body);
+        await newUser.save();
+        res.status(201).send('/login');
     } catch (error) {
         res.status(500).send(error.message);
     }
