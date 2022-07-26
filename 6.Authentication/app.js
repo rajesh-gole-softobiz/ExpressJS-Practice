@@ -6,6 +6,9 @@ const cors = require('cors');
 require('./config/database');
 const User = require('./models/user.model');
 
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 
 app.set("view engine", "ejs");
 app.use(cors());
@@ -28,9 +31,17 @@ app.post('/register',async (req,res)=>{
         if(user){
             return res.status(400).send('User Already Exist');
         }
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.status(201).send('/login');
+
+        bcrypt.hash(req.body.password, saltRounds, async (err, hash)=> {
+            // Store hash in your password DB.
+
+            const newUser = new User({
+                username : req.body.username,
+                password : hash
+            });
+            await newUser.save();
+            res.status(201).send('/login');
+        });
     } catch (error) {
         res.status(500).send(error.message);
     }
