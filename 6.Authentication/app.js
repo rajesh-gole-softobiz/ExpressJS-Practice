@@ -71,7 +71,15 @@ app.post('/register',async (req,res)=>{
     }
 })
 
-app.get('/login',(req,res)=>{
+// Use middleware to check if the user is loggedin or not
+const checkLogged = (req,res,next) => {
+    if(req.isAuthenticated()){
+        return res.redirect('/profile');
+    }
+    next();
+}
+
+app.get('/login',checkLogged,(req,res)=>{
     res.render("login")
 })
 
@@ -97,11 +105,16 @@ app.get('/logout',(req,res)=>{
     }
 })
 
-app.get('/profile',(req,res)=>{
+//Use middleware to check profile authencation
+const checkauthenticated = (req,res,next) => {
     if(req.isAuthenticated()){
-        res.render("profile")
+        return next();
     }
-    res.redirect('/login');
+    res.redirect('/login')
+}
+
+app.get('/profile',checkauthenticated,(req,res)=>{
+    res.render("profile")
     
 })
 
