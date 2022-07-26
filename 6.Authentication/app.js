@@ -64,7 +64,7 @@ app.post('/register',async (req,res)=>{
                 password : hash
             });
             await newUser.save();
-            res.status(201).send('/login');
+            res.redirect('/login');
         });
     } catch (error) {
         res.status(500).send(error.message);
@@ -85,7 +85,16 @@ app.post('/login',
   });
 
 app.get('/logout',(req,res)=>{
-    res.redirect("/")
+    try {
+        req.logout((err)=>{
+            if(err){
+                return next(err)
+            }
+            res.redirect("/")   
+        })
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
 })
 
 app.get('/profile',(req,res)=>{
