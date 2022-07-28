@@ -1,9 +1,10 @@
+const jwt = require('jsonwebtoken');
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const User = require('./models/user.model');
-
+require('dotenv').config();
 
 require('./config/database');
 
@@ -58,8 +59,38 @@ app.post('/register',async (req,res)=>{
 })
 
 //Login Route
-app.post('/login',(req,res)=>{
-    res.send(`Login Page`)
+app.post('/login',async(req,res)=>{
+    //find user
+    const user = await User.findOne({username: req.body.username})
+    //if user not found
+    if(!user){
+        return res.status(401).send({
+            success: false,
+            message: "User is not found"
+        })
+    }
+    // if user found we will match the bcrypt password with user login password
+    if(!bcrypt.compareSync(req.body.password,user.password)){
+        return res.status(401).send({
+            success: false,
+            message: "Incorrect Password"
+        })
+    }
+
+    const payload = {
+        id: user._id,
+        username:user.username,
+    }
+    // if user login details match then we will give it login and generate a token
+    //jwt.sign(payload, secretOrPrivateKey, [options, callback])
+    const token = jwt.sign(payload, process.env.SECRET_KEY, {
+        expiresIn: '2d',
+    })
+    return res.status(200).send({
+        success:true,
+        message:'User loggedIn Successfully',
+        token: 'Bearer'+token // jwt will create a token and add a 'Bearer' infront of it 
+    })
 })
 
 //Profile Route
