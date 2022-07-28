@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
+
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
@@ -14,6 +16,10 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+app.use(passport.initialize());
+
+require('./config/passport')
+
 
 app.get('/',(req,res)=>{
     res.send(`Home Page`)
@@ -89,14 +95,23 @@ app.post('/login',async(req,res)=>{
     return res.status(200).send({
         success:true,
         message:'User loggedIn Successfully',
-        token: 'Bearer'+token // jwt will create a token and add a 'Bearer' infront of it 
+        token: 'Bearer '+token // jwt will create a token and add a 'Bearer' infront of it 
     })
 })
 
 //Profile Route
-app.get('/profile',(req,res)=>{
-    res.send(`Profile Page`)
-})
+// Get this code from here - https://www.passportjs.org/packages/passport-jwt/
+app.get('/profile', passport.authenticate('jwt', { session: false }),
+    (req, res) =>{
+        res.status(200).send({
+            success: true,
+            user:{
+                id: req.user._id,
+                username: req.user.username,
+            }
+        });
+    }
+);
 
 //Route Error
 app.use((req,res,next)=>{
